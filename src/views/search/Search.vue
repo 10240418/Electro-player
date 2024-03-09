@@ -3,7 +3,7 @@ import MusicList from "@/components/musiclist/MusicList.vue";
 import ElectroLoading from "@/base/electroLoading/ElectroLoading.vue";
 import { ref, onMounted } from "vue";
 import { usePlayListStore } from "@/stores/playlist";
-import { getSongDetail, getSearchHot, getSearchList } from "apis/musiclist";
+import {getSongDetail, getSearchHot, getSearchListSongs, getSearchListUser} from "apis/musiclist";
 import { formatSongs } from "@/utils/song";
 import { useLoading } from "@/composables/loading"; // 使用组合式函数代替mixins
 import { showToast } from "base/electroToast/index";
@@ -13,7 +13,8 @@ const { selectAddPlay } = playListStore;
 
 const searchValue = ref("");
 const searchHotWords = ref([]);
-const searchList = ref([]);
+const searchListUsers = ref([]);
+const searchListSongs = ref([]);
 const page = ref(0);
 
 const { isLoading, hideLoad } = useLoading();
@@ -40,7 +41,7 @@ const musicList = ref(null);
 
 const onSearch = async () => {
   searchValue.value = searchValue.value.trim();
-  // console.log(searchValue.value);
+   // console.log(searchValue.value);
   if (searchValue.value === "clickHot") {
     showToast({ message: "搜索内容不能为空~" });
     return;
@@ -48,12 +49,20 @@ const onSearch = async () => {
   // loading....
   page.value = 0;
   isLoading.value = true;
-  if (searchList.value.length > 0) {
+  if (searchListSongs.value.length > 0) {
     musicList.value.scrollToTop();
   }
-  const res = await getSearchList(searchValue.value);
-  const result = res.result;
-  searchList.value = formatSongs(result.songs); //得到的数据中没有封面图，后面需要调用getSongDetail
+    const res = await getSearchListSongs(searchValue.value);
+
+    //获取用户信息
+    const user = await getSearchListUser(searchValue.value);
+    searchListUsers.value = user.result.userprofiles;
+    console.log(searchListUsers.value);
+
+    const result = res.result;
+     searchListSongs.value = formatSongs(result.songs);
+    // console.log(searchList.value);
+    //得到的数据中没有封面图，后面需要调用getSongDetail
   // loading end
   // 调用组合式函数--> @/composables/load.js
   hideLoad();
@@ -62,13 +71,13 @@ const onSearch = async () => {
 // 滚动加载-添加新的数据
 const pullUpLoad = async () => {
   page.value++;
-  const res = await getSearchList(searchValue.value, page.value);
+  const res = await getSearchListSongs(searchValue.value, page.value);
   const result = res.result;
   if (!result.songs) {
     showToast({ message: "没有更多歌曲啦!" });
     return;
   }
-  searchList.value = [...searchList.value, ...formatSongs(result.songs)];
+  searchListSongs.value = [...searchListSongs.value, ...formatSongs(result.songs)];
 };
 
 const selectItem = async (music) => {
@@ -103,17 +112,40 @@ const selectItem = async (music) => {
         @keyup.enter="onSearch"
       />
     </div>
-    <MusicList
-      ref="musicList"
-      :list="searchList"
-      list-type="pullUp"
-      @select="selectItem"
-      @pullUpLoad="pullUpLoad"
-    />
+      <div>
+          <div v-for="(item, index) in searchListUsers" :key="index">
+              <div class="user-info">
+                  <h2>{{ item.nickname }}</h2>
+                  <p>UserId : {{ item.userId }}</p>
+              </div>
+          </div>
+      </div>
+
+<!--    <MusicList-->
+<!--      ref="musicList"-->
+<!--      :list="searchListSongs"-->
+<!--      list-type="pullUp"-->
+<!--      @select="selectItem"-->
+<!--      @pullUpLoad="pullUpLoad"-->
+<!--    />-->
+<!--     -->
   </div>
 </template>
 
 <style lang="less" scoped>
+.user-info {
+  background-color: #625353;
+  padding: 20px;
+  border-radius: 5px;
+  margin: 20px;
+  width: 300px;
+}
+.user-info h2 {
+  margin-top: 0;
+}
+.user-info p {
+  margin-bottom: 5px;
+}
 .search {
   overflow: hidden;
   height: 100%;

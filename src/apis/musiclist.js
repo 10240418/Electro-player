@@ -80,9 +80,20 @@ export const getSearchHot = () => {
 };
 
 // 搜索歌曲
-export const getSearchList = (keywords, page = 0, limit = 30) => {
+export const getSearchListUser = (keywords, page = 0, limit = 3) => {
   return request.get("/search", {
     params: {
+      type: 1002,
+      offset: page * limit,
+      limit: limit,
+      keywords,
+    },
+  });
+};
+export const getSearchListSongs = (keywords, page = 0, limit = 30) => {
+  return request.get("/search", {
+    params: {
+      type: 1,
       offset: page * limit,
       limit: limit,
       keywords,

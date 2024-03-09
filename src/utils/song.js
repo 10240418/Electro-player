@@ -35,6 +35,7 @@ const createSong = (music) => {
 // 将获取的歌曲列表response提取关键信息，转化为songs对象数组
 export const formatSongs = (list) => {
   const Songs = [];
+
   list.forEach((item) => {
     const musicData = item;
     if (musicData.id) {
@@ -42,4 +43,15 @@ export const formatSongs = (list) => {
     }
   });
   return Songs;
+};
+export const formatUser = (list) => {
+  const Users = [];
+  list.forEach((item) => {
+    const musicData = item;
+
+    if (musicData.uid) {
+      Users.push(createSong(musicData));
+    }
+  });
+  return Users;
 };
