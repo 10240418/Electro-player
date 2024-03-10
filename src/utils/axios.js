@@ -3,6 +3,9 @@ import axios from "axios";
 const request = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API_URL,
   timeout: 5000,
+    headers: {
+      'Cache-Control': 'no-cache',
+    }
 });
 
 // axios请求拦截器

@@ -1,6 +1,7 @@
 import { DEFAULT_LIMIT } from "@/config";
 import request from "@/utils/axios";
 import { formatSongs } from "@/utils/song";
+import {forEach} from "vue3-carousel-3d/docs/public/js/carousel-3d.common";
 
 // 更根据歌单id获取歌单列表
 export const getPlayListById = async (id) => {
@@ -63,6 +64,27 @@ export const getLyric = (id) => {
   });
 };
 
+// 根据歌词搜索歌曲
+export const getSongsByLyric = async (Lyric,list) => {
+  const SongsIncludeLyric = [];
+  try{
+    forEach(list, async (item) => {
+        const musicData = item;
+        if (musicData.lrc.lyric.includes(Lyric)) {
+            SongsIncludeLyric.push(musicData.lrc.lyric);
+          console.log(musicData.lrc.lyric);
+        }
+        })
+    return SongsIncludeLyric;
+    } catch (error) {
+    throw error(error);
+
+  }
+};
+
+
+
+
 // 获取音乐评论
 export const getComent = (id, page, limit = DEFAULT_LIMIT) => {
   return request.get("/comment/music", {
@@ -87,6 +109,13 @@ export const getSearchListUser = (keywords, page = 0, limit = 3) => {
       offset: page * limit,
       limit: limit,
       keywords,
+    },
+  });
+};
+export const getSearchSongsListsByUserId = (id) => {
+  return request.get("/user/playlist", {
+    params: {
+     uid: id,
     },
   });
 };

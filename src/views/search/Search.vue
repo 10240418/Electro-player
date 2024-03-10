@@ -3,11 +3,18 @@ import MusicList from "@/components/musiclist/MusicList.vue";
 import ElectroLoading from "@/base/electroLoading/ElectroLoading.vue";
 import { ref, onMounted } from "vue";
 import { usePlayListStore } from "@/stores/playlist";
-import {getSongDetail, getSearchHot, getSearchListSongs, getSearchListUser} from "apis/musiclist";
-import { formatSongs } from "@/utils/song";
+import {
+    getSongDetail,
+    getSearchHot,
+    getSearchListSongs,
+    getSearchListUser,
+    getSearchSongsListsByUserId, getPlayListById, getSongsByLyric
+} from "apis/musiclist";
+import {formatSongs, formatSongsToId} from "@/utils/song";
 import { useLoading } from "@/composables/loading"; // 使用组合式函数代替mixins
 import { showToast } from "base/electroToast/index";
 import { toHttps } from "@/utils/util";
+import {forEach} from "vue3-carousel-3d/docs/public/js/carousel-3d.common";
 const playListStore = usePlayListStore();
 const { selectAddPlay } = playListStore;
 
@@ -49,24 +56,18 @@ const onSearch = async () => {
   // loading....
   page.value = 0;
   isLoading.value = true;
-  if (searchListSongs.value.length > 0) {
-    musicList.value.scrollToTop();
-  }
-    const res = await getSearchListSongs(searchValue.value);
-
+    // const res = await getSearchListSongs(searchValue.value);
     //获取用户信息
     const user = await getSearchListUser(searchValue.value);
     searchListUsers.value = user.result.userprofiles;
     console.log(searchListUsers.value);
-
-    const result = res.result;
-     searchListSongs.value = formatSongs(result.songs);
     // console.log(searchList.value);
     //得到的数据中没有封面图，后面需要调用getSongDetail
   // loading end
   // 调用组合式函数--> @/composables/load.js
   hideLoad();
 };
+
 
 // 滚动加载-添加新的数据
 const pullUpLoad = async () => {
@@ -91,12 +92,102 @@ const selectItem = async (music) => {
     showToast({ message: "哎呀，出错了~" });
   }
 };
+
+//获取歌单列表
+const SongsListsById = ref();
+async function searchSongsLists(userId) {
+    Style.value = 2;
+  try{
+      const result = await getSearchSongsListsByUserId(userId);
+      SongsListsById.value = result.playlist;
+      console.log("歌单列表")
+      console.log(SongsListsById.value);
+  }catch (error) {
+      showToast({ message: "哎呀，出错了~" });
+  }
+}
+const Style= ref(1);
+//获取歌曲通过歌单id
+// const songsIdList = ref();//歌单歌曲id表
+const songsIdListLyric = ref();//歌词
+
+//获取歌单歌曲
+const  searchSongsById=async (id)=>{
+    Style.value = 3;
+    searchIsShowSongs.value = false;
+    const result = await getPlayListById(id);
+    searchListSongs.value = result.tracks;
+    console.log("歌单歌曲");
+    console.log(searchListSongs.value);
+
+    // songsIdListLyric.value = await formatSongsToId(searchListSongs.value,searchValueKeys.value);
+    // console.log("歌曲id歌词表");
+    //这里面就是关于歌曲的一些歌词
+    // console.log(songsIdListLyric.value);
+    // console.log(songsIdListLyric.value);
+
+}
+const onSearchSongs = async () => {
+    searchValueKeys.value = searchValueKeys.value.trim();
+    //输入歌词关键词
+    console.log("歌词关键词");
+    console.log(searchValueKeys.value);
+    if (searchValueKeys.value === "clickHot") {
+        showToast({ message: "搜索内容不能为空~" });
+        return;
+    }
+    // loading....
+    page.value = 0;
+    isLoading.value = true;
+    if (searchListSongs.value.length > 0) {
+        musicList.value.scrollToTop();
+    }
+    //获取歌单里面的歌曲
+    const result = await formatSongsToId(searchListSongs.value,searchValueKeys.value);
+    searchListSongs.value = convertToSongObjects(result);
+    console.log(result);
+    hideLoad();
+};
+class Song {
+    constructor(id, name, singer, album, image) {
+        this.id = id;
+        this.name = name;
+        this.singer = singer;
+        this.album = album;
+        this.image = image;
+    }
+}
+
+const convertToSongObjects = (data) => {
+    const result = [];
+    data.forEach((item, index) => {
+        item.songs.forEach((songData) => {
+            const { id, name, ar, al } = songData;
+            const singer = ar[0].name;
+            const album = al.name;
+            const image = al.picUrl;
+            const song = new Song(id, name, singer, album, image);
+            result.push(song);
+        });
+    });
+    return result;
+};
+const songsIdList = ref();//歌单歌曲id表
+//
+// Style =1 就是用户
+// Style =2 就是歌单
+// Style =3 就是歌曲
+// seachIsShowSongs = ref(true); 就是搜索用户
+// seachIsShowSongs = ref(false); 就是搜索歌曲
+//点一下显示第一个搜索框,点击那啥以后显示第二格shousuokuan
+const searchIsShowSongs = ref(true);
+const searchValueKeys = ref([]);
 </script>
 
 <template>
   <div class="search flex-col">
     <ElectroLoading :show="isLoading" />
-    <div class="search-head">
+    <div v-if="searchIsShowSongs" class="search-head">
       <span
         v-for="(item, index) in searchHotWords"
         :key="index"
@@ -112,27 +203,63 @@ const selectItem = async (music) => {
         @keyup.enter="onSearch"
       />
     </div>
-      <div>
-          <div v-for="(item, index) in searchListUsers" :key="index">
+      <div v-else-if="!searchIsShowSongs" class="search-head">
+      <span
+              v-for="(item, index) in searchHotWords"
+              :key="index"
+              @click="clickHot(item.first)"
+      >{{ item.first }}</span
+      >
+          <input
+                  v-model.trim="searchValueKeys"
+                  class="search-input"
+                  type="text"
+                  placeholder="关键词"
+                  autofocus
+                  @keyup.enter="onSearchSongs"
+          />
+      </div>
+      <div v-if="Style===1">
+          <div  class="user-click" v-for="(item, index) in searchListUsers" :key="index" @click="searchSongsLists(item.userId)">
               <div class="user-info">
                   <h2>{{ item.nickname }}</h2>
                   <p>UserId : {{ item.userId }}</p>
               </div>
           </div>
       </div>
+      <div v-else-if="Style===2">
+          <div  class="user-click" v-for="(item, index) in SongsListsById" :key="index" @click="searchSongsById(item.id)">
+              <div class="user-info">
+                  <h2> name: {{ item.name }}</h2>
+                  <p> {{ item.trackCount }} 首</p>
+                  <p> id:{{ item.id }} </p>
+                  <p>播放次数: {{ item.playCount }}</p>
+              </div>
+          </div>
+      </div>
+      <div v-else-if="Style===3">
+              <MusicList
+                ref="musicList"
+                :list="searchListSongs"
+                list-type="pullUp"
+                @select="selectItem"
+                @pullUpLoad="pullUpLoad"
+              />
+      </div>
 
-<!--    <MusicList-->
-<!--      ref="musicList"-->
-<!--      :list="searchListSongs"-->
-<!--      list-type="pullUp"-->
-<!--      @select="selectItem"-->
-<!--      @pullUpLoad="pullUpLoad"-->
-<!--    />-->
-<!--     -->
+
   </div>
 </template>
 
 <style lang="less" scoped>
+.user-click{
+//  鼠标移入变形状
+  cursor: pointer;
+  &:hover{
+    transform: scale(1.1);
+    transition-duration: 0.5s;
+  }
+}
 .user-info {
   background-color: #625353;
   padding: 20px;
