@@ -12,13 +12,6 @@
       </template>
       <template v-else>
         <!-- ********** -->
-        <dd>Electro 在线播放器</dd>
-        <dd>
-          <a class="hover" target="_blank" href="https://github.com/jianchuxin">
-            <ElectroIcon type="github" :size="14" />
-            merrickJ
-          </a>
-        </dd>
       </template>
     </dl>
     <!-- 歌词滚动 -->

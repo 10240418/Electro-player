@@ -43,7 +43,6 @@ if (loadDom) {
 </script>
 
 <template>
-  <ElectroHeader />
   <RouterView />
   <!-- 播放器 -->
   <audio ref="electroPlayer"></audio>

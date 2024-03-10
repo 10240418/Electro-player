@@ -408,7 +408,6 @@ const getMusicLyric = async (id) => {
             {{ currentMusic.name }}
             <span>-{{ currentMusic.singer }}</span>
           </template>
-          <template v-else>欢迎使用 Electro 在线音乐播放器</template>
         </div>
         <div v-if="currentMusic.id" class="music-bar-time">
           {{ formatSecond(currentTime) }}/{{

@@ -50,22 +50,31 @@ export const formatSongsToId = async (list, keys) => {
   for (const item of list) {
     const musicData = item;
     if (musicData.id) {
-      console.log(musicData.id);
       // 获取歌词
       const lyric = await getLyric(musicData.id);
-      // 正则表达式，匹配歌词中包含关键词的部分（不区分大小写）
-      const regex = new RegExp(`\\b${keys}\\b`, 'i');
-      console.log(lyric.lrc.lyric)
-
-      if (regex.test(lyric.lrc.lyric)) {
-        // 匹配到关键词，获取歌曲详情
-        const songDetail = await getSongDetail(musicData.id);
-        Songs.push(songDetail);
+      // 将歌词按行分割
+      const lyricLines = lyric.lrc.lyric.split('\n');
+      // 将关键词转换为小写，以进行不区分大小写的匹配
+      const lowerCaseKeys = keys.toLowerCase();
+      // 遍历歌词的每一行
+      for (const line of lyricLines) {
+        // 将当前行转换为小写，以进行匹配
+        const lowerCaseLine = line.toLowerCase();
+        // 判断当前行是否包含关键词
+        if (lowerCaseLine.includes(lowerCaseKeys)) {
+          // 匹配到关键词，直接输出当前行歌词
+          console.log(line);
+          // 匹配到关键词，获取歌曲详情
+          const songDetail = await getSongDetail(musicData.id);
+          Songs.push(songDetail);
+          break; // 找到匹配的歌词后结束循环
+        }
       }
     }
   }
   return Songs;
 };
+
 
 
 export const formatUser = (list) => {

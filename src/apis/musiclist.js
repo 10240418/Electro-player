@@ -82,9 +82,6 @@ export const getSongsByLyric = async (Lyric,list) => {
   }
 };
 
-
-
-
 // 获取音乐评论
 export const getComent = (id, page, limit = DEFAULT_LIMIT) => {
   return request.get("/comment/music", {

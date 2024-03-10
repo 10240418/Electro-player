@@ -33,7 +33,6 @@ const InitSearchHotWords = async () => {
 };
 
 onMounted(() => {
-  InitSearchHotWords();
   isLoading.value = false;
 });
 
@@ -47,6 +46,9 @@ const clickHot = (keywords) => {
 const musicList = ref(null);
 
 const onSearch = async () => {
+    searchIsShowSongs.value += 1;
+    console.log(searchIsShowSongs.value);;
+
   searchValue.value = searchValue.value.trim();
    // console.log(searchValue.value);
   if (searchValue.value === "clickHot") {
@@ -60,6 +62,9 @@ const onSearch = async () => {
     //获取用户信息
     const user = await getSearchListUser(searchValue.value);
     searchListUsers.value = user.result.userprofiles;
+    if(searchListUsers.value.length< 1){
+        showToast({ message: "用户不存在~" });
+    }
     console.log(searchListUsers.value);
     // console.log(searchList.value);
     //得到的数据中没有封面图，后面需要调用getSongDetail
@@ -97,7 +102,11 @@ const selectItem = async (music) => {
 const SongsListsById = ref();
 async function searchSongsLists(userId) {
     Style.value = 2;
-  try{
+    searchIsShowSongs.value =2;
+    console.log("lalalla")
+    console.log(Style.value);
+    console.log(searchIsShowSongs.value);
+    try{
       const result = await getSearchSongsListsByUserId(userId);
       SongsListsById.value = result.playlist;
       console.log("歌单列表")
@@ -113,8 +122,9 @@ const songsIdListLyric = ref();//歌词
 
 //获取歌单歌曲
 const  searchSongsById=async (id)=>{
+
     Style.value = 3;
-    searchIsShowSongs.value = false;
+    searchIsShowSongs.value = 3;
     const result = await getPlayListById(id);
     searchListSongs.value = result.tracks;
     console.log("歌单歌曲");
@@ -145,6 +155,8 @@ const onSearchSongs = async () => {
     //获取歌单里面的歌曲
     const result = await formatSongsToId(searchListSongs.value,searchValueKeys.value);
     searchListSongs.value = convertToSongObjects(result);
+    // searchListSongs.value = result;
+    console.log("搜索结果")
     console.log(result);
     hideLoad();
 };
@@ -172,7 +184,7 @@ const convertToSongObjects = (data) => {
     });
     return result;
 };
-const songsIdList = ref();//歌单歌曲id表
+// const songsIdList = ref();//歌单歌曲id表
 //
 // Style =1 就是用户
 // Style =2 就是歌单
@@ -180,20 +192,26 @@ const songsIdList = ref();//歌单歌曲id表
 // seachIsShowSongs = ref(true); 就是搜索用户
 // seachIsShowSongs = ref(false); 就是搜索歌曲
 //点一下显示第一个搜索框,点击那啥以后显示第二格shousuokuan
-const searchIsShowSongs = ref(true);
+const searchIsShowSongs = ref(1);
 const searchValueKeys = ref([]);
+const setStatues=()=>{
+    searchIsShowSongs.value -=1
+    Style.value -= 1;
+    if(searchIsShowSongs.value<=1 || Style.value<=1){
+        searchIsShowSongs.value = 1;
+        Style.value = 1;
+        searchValue.value = "";
+    }
+}
 </script>
 
 <template>
   <div class="search flex-col">
+      <div class="music-btn">
+          <span @click="setStatues">返回</span>
+      </div>
     <ElectroLoading :show="isLoading" />
-    <div v-if="searchIsShowSongs" class="search-head">
-      <span
-        v-for="(item, index) in searchHotWords"
-        :key="index"
-        @click="clickHot(item.first)"
-        >{{ item.first }}</span
-      >
+    <div v-if="searchIsShowSongs===1||2" class="search-head">
       <input
         v-model.trim="searchValue"
         class="search-input"
@@ -203,7 +221,7 @@ const searchValueKeys = ref([]);
         @keyup.enter="onSearch"
       />
     </div>
-      <div v-else-if="!searchIsShowSongs" class="search-head">
+      <div v-else-if="searchIsShowSongs===3" class="search-head">
       <span
               v-for="(item, index) in searchHotWords"
               :key="index"
@@ -252,11 +270,73 @@ const searchValueKeys = ref([]);
 </template>
 
 <style lang="less" scoped>
+
+.music-btn {
+  margin-bottom: 10px;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  gap: 8px;
+  a,
+  span {
+    display: inline-block;
+    height: 40px;
+    box-sizing: border-box;
+    padding: 0 23px;
+    border: 1px solid @btn_color;
+    color: @btn_color;
+    border-radius: @btn_border_radius;
+    font-size: 14px;
+    line-height: 40px;
+    overflow: hidden;
+    cursor: pointer;
+    &:hover,
+    &:active {
+      border-color: @btn_color_active;
+      color: @btn_color_active;
+    }
+  }
+
+  @media (min-width: 960px) {
+    span.show-960 {
+      display: none;
+    }
+  }
+
+  @media (max-width: 960px) {
+    span.show-960 {
+      display: inline-block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    height: 50px;
+    a,
+    span {
+      height: 35px;
+      padding: 0 10px;
+      margin-right: 6px;
+      line-height: 35px;
+    }
+  }
+}
+@media (max-width: 520px) {
+  .music-btn {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    height: 80px;
+    a,
+    span {
+      text-align: center;
+    }
+  }
+}
 .user-click{
 //  鼠标移入变形状
   cursor: pointer;
   &:hover{
-    transform: scale(1.1);
+    transform: scale(1.05);
     transition-duration: 0.5s;
   }
 }

@@ -145,7 +145,7 @@ defineExpose({ scrollToTop });
         <slot name="listBtn"></slot>
       </div>
     </template>
-    <ElectroNoResult v-else title="弄啥呢，空空如也~" />
+    <ElectroNoResult v-else title="加载中~" />
   </div>
 </template>
 

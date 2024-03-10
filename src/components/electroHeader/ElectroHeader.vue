@@ -71,7 +71,7 @@ const getUserInfo = async (uid) => {
     setNickname(nickname);
     setTimeout(() => {
         showToast({
-            message: `${nickname} 欢迎使用 Electro Player`,
+            message: `${nickname} r`,
             position: "top",
         });
     }, 200);
@@ -81,7 +81,7 @@ const getUserInfo = async (uid) => {
 <template>
     <header class="electro-header">
         <h1 class="header">
-            <a href="https://github.com/jianchuxin/Electro-player" target="_blank">Electro 在线音乐播放器</a>
+            <a href="https://github.com/jianchuxin/Electro-player" target="_blank"></a>
         </h1>
         <!-- 用户信息--头像和登录 -->
         <dl class="user">
