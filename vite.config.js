@@ -9,6 +9,9 @@ const __dirnameNew = path.dirname(__filenameNew);
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  server:{
+    port: 11234,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirnameNew, "src"),

@@ -71,7 +71,7 @@ const getUserInfo = async (uid) => {
     setNickname(nickname);
     setTimeout(() => {
         showToast({
-            message: `${nickname} r`,
+            message: `${nickname} 欢迎使用 Electro Player`,
             position: "top",
         });
     }, 200);
@@ -79,77 +79,16 @@ const getUserInfo = async (uid) => {
 </script>
 
 <template>
-    <header class="electro-header">
-        <h1 class="header">
-            <a href="https://github.com/jianchuxin/Electro-player" target="_blank"></a>
-        </h1>
-        <!-- 用户信息--头像和登录 -->
-        <dl class="user">
-            <template v-if="isLoggedin">
-                <RouterLink to="/music/userlist" custom v-slot="{ navigate }">
-                    <dt @click="navigate" class="user-info" role="link">
-                        <img :src="avatarUrl" class="avatar" alt="img" />
-                        <span class="user-name">{{ nickname }}</span>
-                    </dt>
-                </RouterLink>
-                <dd class="user-btn" @click="opendialog('logout')">退出</dd>
-            </template>
-            <dd v-else class="user-btn" @click="opendialog('login')">登录</dd>
-        </dl>
-
-        <!-- 登录弹窗 -->
-        <ElectroDialog
-            ref="loginDialog"
-            head-text="登录"
-            confirm-btn-text="登录"
-            cancel-btn-text="关闭"
-            @confirm="login"
-        >
-            <div class="electro-dialog-text">
-                <input
-                    type="number"
-                    v-model.trim="uidValue"
-                    class="electro-dialog-input"
-                    placeholder="请输入您的网易云 UID"
-                    v-focus
-                    @keyup.enter="login"
-                />
-            </div>
-            <template #btn>
-                <div @click="opendialog('help')">帮助</div>
-            </template>
-        </ElectroDialog>
-        <!-- 帮助弹窗 -->
-        <ElectroDialog
-            ref="helpDialog"
-            head-text="登录帮助"
-            confirm-btn-text="去登录"
-            cancel-btn-text="关闭"
-            @confirm="opendialog('login')"
-        >
-            <div class="electro-dialog-text">
-                <p>
-                    1、
-                    <a target="_blank" href="https://music.163.com">点我(https://music.163.com)</a>
-                    打开网易云音乐官网
-                </p>
-                <p>2、点击页面右上角的“登录”</p>
-                <p>3、点击您的头像，进入我的主页</p>
-                <p>4、复制浏览器地址栏 /user/home?id= 后面的数字（网易云 UID）</p>
-            </div>
-        </ElectroDialog>
-        <!-- 退出弹窗 -->
-        <ElectroDialog ref="logoutDialog" body-text="确定退出当前用户吗？" @confirm="logout"></ElectroDialog>
-    </header>
+    <header class="electro-header"></header>
 </template>
 
 <style lang="less" scoped>
 .electro-header {
     position: absolute;
-    top: 0;
+    top: 0px;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: 1px;
     @media (max-width: 768px) {
         background-color: @header_bg_color;
     }

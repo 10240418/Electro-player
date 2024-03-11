@@ -9,11 +9,11 @@ const router = createRouter({
     {
       path: "/music",
       component: () => import("views/Music.vue"),
-      redirect: "/music/playlist",
+      redirect: "/music/search",
       children: [
         {
           path: "/music/playlist", //正在播放列表
-          component: () => import("views/playlist/PlayList.vue"),
+          component: () => import("views/search/Search.vue"),
         },
         {
           path: "/music/userlist", //我的歌单
