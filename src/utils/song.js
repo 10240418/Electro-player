@@ -36,7 +36,6 @@ const createSong = (music) => {
 // 将获取的歌曲列表response提取关键信息，转化为songs对象数组
 export const formatSongs = (list) => {
   const Songs = [];
-
   list.forEach((item) => {
     const musicData = item;
     if (musicData.id) {
@@ -45,6 +44,7 @@ export const formatSongs = (list) => {
   });
   return Songs;
 };
+<<<<<<< HEAD
 export const formatSongsToId = async (list, keys) => {
   const Songs = [];
   for (const item of list) {
@@ -88,3 +88,5 @@ export const formatUser = (list) => {
   });
   return Users;
 };
+=======
+>>>>>>> parent of aa3169a (显示用户userid)

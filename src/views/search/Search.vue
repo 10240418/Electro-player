@@ -3,6 +3,7 @@ import MusicList from "@/components/musiclist/MusicList.vue";
 import ElectroLoading from "@/base/electroLoading/ElectroLoading.vue";
 import { ref, onMounted } from "vue";
 import { usePlayListStore } from "@/stores/playlist";
+<<<<<<< HEAD
 import {
     getSongDetail,
     getSearchHot,
@@ -11,6 +12,10 @@ import {
     getSearchSongsListsByUserId, getPlayListById, getSongsByLyric
 } from "apis/musiclist";
 import {formatSongs, formatSongsToId} from "@/utils/song";
+=======
+import { getSongDetail, getSearchHot, getSearchList } from "apis/musiclist";
+import { formatSongs } from "@/utils/song";
+>>>>>>> parent of aa3169a (显示用户userid)
 import { useLoading } from "@/composables/loading"; // 使用组合式函数代替mixins
 import { showToast } from "base/electroToast/index";
 import { toHttps } from "@/utils/util";
@@ -20,8 +25,7 @@ const { selectAddPlay } = playListStore;
 
 const searchValue = ref("");
 const searchHotWords = ref([]);
-const searchListUsers = ref([]);
-const searchListSongs = ref([]);
+const searchList = ref([]);
 const page = ref(0);
 
 const { isLoading, hideLoad } = useLoading();
@@ -50,7 +54,7 @@ const onSearch = async () => {
     console.log(searchIsShowSongs.value);;
 
   searchValue.value = searchValue.value.trim();
-   // console.log(searchValue.value);
+  // console.log(searchValue.value);
   if (searchValue.value === "clickHot") {
     showToast({ message: "搜索内容不能为空~" });
     return;
@@ -58,6 +62,7 @@ const onSearch = async () => {
   // loading....
   page.value = 0;
   isLoading.value = true;
+<<<<<<< HEAD
     // const res = await getSearchListSongs(searchValue.value);
     //获取用户信息
     const user = await getSearchListUser(searchValue.value);
@@ -68,6 +73,14 @@ const onSearch = async () => {
     console.log(searchListUsers.value);
     // console.log(searchList.value);
     //得到的数据中没有封面图，后面需要调用getSongDetail
+=======
+  if (searchList.value.length > 0) {
+    musicList.value.scrollToTop();
+  }
+  const res = await getSearchList(searchValue.value);
+  const result = res.result;
+  searchList.value = formatSongs(result.songs); //得到的数据中没有封面图，后面需要调用getSongDetail
+>>>>>>> parent of aa3169a (显示用户userid)
   // loading end
   // 调用组合式函数--> @/composables/load.js
   hideLoad();
@@ -77,13 +90,13 @@ const onSearch = async () => {
 // 滚动加载-添加新的数据
 const pullUpLoad = async () => {
   page.value++;
-  const res = await getSearchListSongs(searchValue.value, page.value);
+  const res = await getSearchList(searchValue.value, page.value);
   const result = res.result;
   if (!result.songs) {
     showToast({ message: "没有更多歌曲啦!" });
     return;
   }
-  searchListSongs.value = [...searchListSongs.value, ...formatSongs(result.songs)];
+  searchList.value = [...searchList.value, ...formatSongs(result.songs)];
 };
 
 const selectItem = async (music) => {
@@ -221,6 +234,7 @@ const setStatues=()=>{
         @keyup.enter="onSearch"
       />
     </div>
+<<<<<<< HEAD
       <div v-else-if="searchIsShowSongs===3" class="search-head">
       <span
               v-for="(item, index) in searchHotWords"
@@ -266,10 +280,20 @@ const setStatues=()=>{
       </div>
 
 
+=======
+    <MusicList
+      ref="musicList"
+      :list="searchList"
+      list-type="pullUp"
+      @select="selectItem"
+      @pullUpLoad="pullUpLoad"
+    />
+>>>>>>> parent of aa3169a (显示用户userid)
   </div>
 </template>
 
 <style lang="less" scoped>
+<<<<<<< HEAD
 
 .music-btn {
   margin-bottom: 10px;
@@ -353,6 +377,8 @@ const setStatues=()=>{
 .user-info p {
   margin-bottom: 5px;
 }
+=======
+>>>>>>> parent of aa3169a (显示用户userid)
 .search {
   overflow: hidden;
   height: 100%;
