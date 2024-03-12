@@ -44,7 +44,6 @@ export const formatSongs = (list) => {
   });
   return Songs;
 };
-<<<<<<< HEAD
 export const formatSongsToId = async (list, keys) => {
   const Songs = [];
   for (const item of list) {
@@ -88,5 +87,4 @@ export const formatUser = (list) => {
   });
   return Users;
 };
-=======
->>>>>>> parent of aa3169a (显示用户userid)
+
