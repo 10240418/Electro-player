@@ -1,6 +1,8 @@
 import { DEFAULT_LIMIT } from "@/config";
 import request from "@/utils/axios";
 import { formatSongs } from "@/utils/song";
+import {forEach} from "vue3-carousel-3d/docs/public/js/carousel-3d.common";
+import {ref} from "vue";
 
 // 更根据歌单id获取歌单列表
 export const getPlayListById = async (id) => {
@@ -88,4 +90,20 @@ export const getSearchList = (keywords, page = 0, limit = 30) => {
       keywords,
     },
   });
+};
+export const getSearchListByKeys = async (keywords, list) => {
+  const songs = [];
+  // 遍历列表
+  for (const item of list) {
+    // 获取歌词
+    const lyrics = await getLyric(item.id); // 假设getLyric函数可以获取歌词，这里使用await等待结果
+    // 检查歌词中是否包含关键词
+    if (lyrics.lrc.lyric.includes(keywords)) {
+      // 如果包含关键词，添加整个数据项到songs数组中
+      item.lyrics = lyrics.lrc.lyric;
+      songs.push(item);
+      console.log(item);
+    }
+  }
+  return songs;
 };
