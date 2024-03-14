@@ -125,10 +125,11 @@ const  searchSongsById=async (id)=>{
 
     Style.value = 3;
     searchIsShowSongs.value = 3;
+    searchListSongs.value = [];
     const result = await getPlayListById(id);
     searchListSongs.value = result.tracks;
-    console.log("歌单歌曲");
-    console.log(searchListSongs.value);
+    // console.log("歌单歌曲");
+    // console.log(searchListSongs.value);
 
     // songsIdListLyric.value = await formatSongsToIdgetSongsByLyric(searchListSongs.value,searchValueKeys.value);
     // console.log("歌曲id歌词表");
@@ -137,8 +138,10 @@ const  searchSongsById=async (id)=>{
     // console.log(songsIdListLyric.value);
 
 }
+const searchListSongsByKeys = ref([]);
 const onSearchSongs = async (event) => {
     if (event.key !== 'Enter') return
+    Style.value=4;
 
     searchValueKeys.value = searchValueKeys.value.trim();
     //输入歌词关键词
@@ -154,14 +157,15 @@ const onSearchSongs = async (event) => {
     if (searchListSongs.value.length > 0) {
         musicList.value.scrollToTop();
     }
+    console.log(searchListSongs.value);
     //获取歌单里面的歌曲
-    const res = await getSearchListByKeys(searchValue.value,searchListSongs.value);
+    const res = await getSearchListByKeys(searchValueKeys.value,searchListSongs.value);
     //添加了歌词的数据数组
+    searchListSongsByKeys.value = res;
 
-    searchListSongs.value = res;
     // searchListSongs.value = result;
-    console.log("搜索结果")
-    console.log(res);
+    // console.log("搜索结果")
+    // console.log(res);
     hideLoad();
 };
 // const songsIdList = ref();//歌单歌曲id表
@@ -196,7 +200,7 @@ const setStatues=()=>{
                     v-model.trim="searchValue"
                     class="search-input"
                     type="text"
-                    placeholder="音乐/歌手"
+                    placeholder="用户名"
                     autofocus
                     @keyup="onSearch"
             />
@@ -238,6 +242,16 @@ const setStatues=()=>{
                     @pullUpLoad="pullUpLoad"
             />
         </div>
+        <div v-else-if="Style===4">
+            <MusicList
+                    ref="musicList"
+                    :list="searchListSongsByKeys"
+                    list-type="pullUp"
+                    @select="selectItem"
+                    @pullUpLoad="pullUpLoad"
+            />
+        </div>
+
 
 
     </div>

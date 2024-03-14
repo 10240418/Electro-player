@@ -93,19 +93,26 @@ export const getSearchList = (keywords, page = 0, limit = 30) => {
 };
 export const getSearchListByKeys = async (keywords, list) => {
   const songs = [];
+
+  // 并行处理获取歌词
+  const lyricPromises = list.map(item => getLyric(item.id));
+  const lyricsList = await Promise.all(lyricPromises);
+
   // 遍历列表
-  for (const item of list) {
-    // 获取歌词
-    const lyrics = await getLyric(item.id); // 假设getLyric函数可以获取歌词，这里使用await等待结果
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i];
+    const lyrics = lyricsList[i];
+
     // 检查歌词中是否包含关键词
-    console.log(item.id);
     if (lyrics.lrc.lyric.includes(keywords)) {
-      // 如果包含关键词，添加整个数据项到songs数组中
-      item.lyrics = lyrics.lrc.lyric;
-      songs.push(item);
-      console.log(item);
+      // 添加符合条件的歌曲到数组中
+      songs.push({
+        ...item,
+        lyrics: true // 只保存布尔值表示是否包含关键词
+      });
     }
   }
+
   return songs;
 };
 //搜索用户
