@@ -2,9 +2,9 @@
   <div>
     <!-- 歌曲封面 -->
     <dl class="music-info">
-      <dt>
-        <img :src="picUrl" alt="img" />
-      </dt>
+<!--      <dt>-->
+<!--        <img :src="picUrl" alt="img" />-->
+<!--      </dt>-->
       <template v-if="currentMusic.id">
         <dd>歌曲名：{{ currentMusic.name }}</dd>
         <dd>歌手名：{{ currentMusic.singer }}</dd>
@@ -12,13 +12,13 @@
       </template>
       <template v-else>
         <!-- ********** -->
-        <dd>Electro 在线播放器</dd>
-        <dd>
-          <a class="hover" target="_blank" href="https://github.com/jianchuxin">
-            <ElectroIcon type="github" :size="14" />
-            merrickJ
-          </a>
-        </dd>
+<!--        <dd>Electro 在线播放器</dd>-->
+<!--        <dd>-->
+<!--          <a class="hover" target="_blank" href="https://github.com/jianchuxin">-->
+<!--            <ElectroIcon type="github" :size="14" />-->
+<!--            merrickJ-->
+<!--          </a>-->
+<!--        </dd>-->
       </template>
     </dl>
     <!-- 歌词滚动 -->

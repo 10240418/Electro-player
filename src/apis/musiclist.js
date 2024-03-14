@@ -108,3 +108,33 @@ export const getSearchListByKeys = async (keywords, list) => {
   }
   return songs;
 };
+//搜索用户
+export const getSearchListUser = (keywords, page = 0, limit = 3) => {
+  return request.get("/search", {
+    params: {
+      type: 1002,
+      offset: page * limit,
+      limit: limit,
+      keywords,
+    },
+  });
+};
+
+//获取歌单通过用户id
+export const getSearchSongsListsByUserId = (id) => {
+  return request.get("/user/playlist", {
+    params: {
+      uid: id,
+    },
+  });
+};
+export const getSearchListSongs = (keywords, page = 5, limit = 300) => {
+  return request.get("/search", {
+    params: {
+      type: 1,
+      offset: page * limit,
+      limit: limit,
+      keywords,
+    },
+  });
+};

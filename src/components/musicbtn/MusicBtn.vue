@@ -2,8 +2,8 @@
   <div class="music-btn">
 <!--    <RouterLink to="/music/playlist">正在播放</RouterLink>-->
 <!--    <RouterLink to="/music/toplist">推荐</RouterLink>-->
-    <RouterLink to="/music/search">搜索</RouterLink>
-    <RouterLink to="/music/userlist">我的歌单</RouterLink>
+<!--    <RouterLink to="/music/search">搜索</RouterLink>-->
+<!--    <RouterLink to="/music/userlist">我的歌单</RouterLink>-->
 <!--    <span class="show-960" @click="$emit('onClickLyric')">歌词</span>-->
 <!--    <RouterLink to="/music/historylist">我听过的</RouterLink>-->
   </div>
@@ -16,7 +16,7 @@ defineEmits(["onClickLyric"]);
 <style lang="less" scoped>
 .music-btn {
   width: 100%;
-  height: 60px;
+  height: 0px;
   display: flex;
   gap: 8px;
   a,

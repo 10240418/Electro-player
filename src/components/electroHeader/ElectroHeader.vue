@@ -69,12 +69,12 @@ const getUserInfo = async (uid) => {
     setUid(uid);
     setAvatarUrl(toHttps(avatarUrl));
     setNickname(nickname);
-    setTimeout(() => {
-        showToast({
-            message: `${nickname} 欢迎使用 Electro Player`,
-            position: "top",
-        });
-    }, 200);
+    // setTimeout(() => {
+    //     showToast({
+    //         message: `${nickname} 欢迎使用 Electro Player`,
+    //         position: "top",
+    //     });
+    // }, 200);
 };
 </script>
 
