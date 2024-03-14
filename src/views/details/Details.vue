@@ -57,7 +57,6 @@ const isSearch =ref(true);
   <!-- 歌单详情 -->
   <div class="details">
       <div class="search flex-col">
-
           <div class="search-head">
               <input
                       v-model.trim="searchValue"

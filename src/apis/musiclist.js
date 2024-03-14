@@ -98,6 +98,7 @@ export const getSearchListByKeys = async (keywords, list) => {
     // 获取歌词
     const lyrics = await getLyric(item.id); // 假设getLyric函数可以获取歌词，这里使用await等待结果
     // 检查歌词中是否包含关键词
+    console.log(item.id);
     if (lyrics.lrc.lyric.includes(keywords)) {
       // 如果包含关键词，添加整个数据项到songs数组中
       item.lyrics = lyrics.lrc.lyric;
