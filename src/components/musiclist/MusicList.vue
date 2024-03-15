@@ -22,6 +22,9 @@
                         </div>
                         <span v-else class="list-album">{{ item.album }}</span>
                     </div>
+                    <div>
+
+                    </div>
                     <slot name="listBtn"></slot>
                 </div>
             </template>
@@ -173,7 +176,7 @@ defineExpose({scrollToTop});
 
 .list-content {
   overflow-y: auto; /* Add scrollbar */
-  max-height: calc(100vh - 150px); /* Set max-height to limit number of songs */
+  max-height: calc(100vh - 400px); /* Set max-height to limit number of songs */
 }
 
 .list-header {

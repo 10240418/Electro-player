@@ -1,11 +1,11 @@
 import { DEFAULT_LIMIT } from "@/config";
 import request from "@/utils/axios";
 import { formatSongs } from "@/utils/song";
-import {forEach} from "vue3-carousel-3d/docs/public/js/carousel-3d.common";
-import {ref} from "vue";
+// import {forEach} from "vue3-carousel-3d/docs/public/js/carousel-3d.common";
+// import {ref} from "vue";
 
 // 更根据歌单id获取歌单列表
-export const getPlayListById = async (id) => {
+export const getPlayListById = async (id,count) => {
   try {
     const res = await request.get("/playlist/detail", {
       params: { id },
@@ -19,7 +19,7 @@ export const getPlayListById = async (id) => {
     } else {
       // 限制歌单详情最大 500
       const ids = trackIds
-        .slice(0, 500)
+        .slice((count-1)*1000, count*1000)
         .map((v) => v.id)
         .toString();
       const resSongs = await getSongDetail(ids);
@@ -106,6 +106,7 @@ export const getSearchListByKeys = async (keywords, list) => {
     // 检查歌词中是否包含关键词
     if (lyrics.lrc.lyric.includes(keywords)) {
       // 添加符合条件的歌曲到数组中
+      console.log(item.id);
       songs.push({
         ...item,
         lyrics: true // 只保存布尔值表示是否包含关键词

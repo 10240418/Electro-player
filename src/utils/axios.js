@@ -2,7 +2,8 @@ import axios from "axios";
 
 const request = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API_URL,
-  timeout: 5000,
+    // 超时时间
+    // timeout: 10000000,
 });
 
 // axios请求拦截器
