@@ -112,12 +112,15 @@ export const getSearchListByKeys = async (keywords, list) => {
         lyrics: true // 只保存布尔值表示是否包含关键词
       });
     }
+    if(i===list.length-1){
+      // console.log(songs);
+      return songs;
+    }
   }
-
   return songs;
 };
 //搜索用户
-export const getSearchListUser = (keywords, page = 0, limit = 3) => {
+export const getSearchListUser = (keywords, page = 0, limit = 100) => {
   return request.get("/search", {
     params: {
       type: 1002,

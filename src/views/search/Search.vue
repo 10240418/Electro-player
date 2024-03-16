@@ -34,7 +34,13 @@ const { isLoading, hideLoad } = useLoading();
 // };
 
 onMounted(() => {
+
     isLoading.value = false;
+    const recentUsers = JSON.parse(localStorage.getItem("recentUsers")) || [];
+    if(recentUsers.length>0){
+        // console.log(recentUsers.length);
+        searchListUsers.value = recentUsers;
+    }
 });
 
 // 点击热搜词语
@@ -46,16 +52,14 @@ onMounted(() => {
 // 引用子组件实例，使用{scrollToTop}方法
 const musicList = ref(null);
 
+//搜索用户
 const onSearch = async (event) => {
     if (event.key !== 'Enter') return
-    searchIsShowSongs.value += 1;
+    searchIsShowSongs.value = 2;
+    //2 表示可以用户页面
     console.log(searchIsShowSongs.value);
     searchValue.value = searchValue.value.trim();
     // console.log(searchValue.value);
-    if (searchValue.value === "clickHot") {
-        showToast({ message: "搜索内容不能为空~" });
-        return;
-    }
     // loading....
     page.value = 0;
     isLoading.value = true;
@@ -65,12 +69,9 @@ const onSearch = async (event) => {
     searchListUsers.value = user.result.userprofiles;
     if(searchListUsers.value.length< 1){
         showToast({ message: "用户不存在~" });
+        isLoading.value = false;
+        return;
     }
-    console.log(searchListUsers.value);
-    // console.log(searchList.value);
-    //得到的数据中没有封面图，后面需要调用getSongDetail
-    // loading end
-    // 调用组合式函数--> @/composables/load.js
     hideLoad();
 };
 
@@ -101,15 +102,24 @@ const selectItem = async (music) => {
 
 //获取歌单列表
 const SongsListsById = ref();
-async function searchSongsLists(userId) {
+async function searchSongsLists(item) {
     Style.value = 2;
     searchIsShowSongs.value =2;
-    // console.log("lalalla")
-    // console.log(Style.value);
-    // console.log(searchIsShowSongs.value);
+    //localStorage缓存item
+    const recentUsers = JSON.parse(localStorage.getItem("recentUsers")) || [];
+    while(recentUsers.length>9){
+        recentUsers.pop();
+    }
+    recentUsers.unshift(item);
+    localStorage.setItem("recentUsers", JSON.stringify(recentUsers));
     try{
-        const result = await getSearchSongsListsByUserId(userId);
+        //获取用户的歌单列表
+        const result = await getSearchSongsListsByUserId(item.userId);
         SongsListsById.value = result.playlist;
+        if(SongsListsById.value.length<1){
+            showToast({ message: "用户歌单为空~" });
+            return;
+        }
     }catch (error) {
         showToast({ message: "哎呀，出错了~" });
     }
@@ -118,37 +128,26 @@ const Style= ref(1);
 //获取歌曲通过歌单id
 // const songsIdList = ref();//歌单歌曲id表
 // const songsIdListLyric = ref();//歌词
-
-//获取歌单歌曲
+//获取歌单歌曲  加载歌单歌曲
 const  searchSongsById=async (id,count)=>{
-
     Style.value = 3;
+    // 3 表示可以歌曲页面
     searchIsShowSongs.value = 3;
     searchListSongs.value = [];
+    isLoading.value = true;
+    showToast({ message: "加载歌曲中~" });
+    //加载中, 不允许操作
     const times = Math.ceil(count/1000);
     for (let i = 1; i <= times; i++) {
         const result = await getPlayListById(id,i);
         searchListSongs.value = [...searchListSongs.value, ...result.tracks];
     }
-
-
-    const result = await getPlayListById(id);
-    searchListSongs.value = result.tracks;
-    // console.log("歌单歌曲");
-    // console.log(searchListSongs.value);
-
-    // songsIdListLyric.value = await formatSongsToIdgetSongsByLyric(searchListSongs.value,searchValueKeys.value);
-    // console.log("歌曲id歌词表");
-    //这里面就是关于歌曲的一些歌词
-    // console.log(songsIdListLyric.value);
-    // console.log(songsIdListLyric.value);
-
+    isLoading.value = false;
 }
 const searchListSongsByKeys = ref([]);
 const onSearchSongs = async (event) => {
     if (event.key !== 'Enter') return
     Style.value=4;
-
     searchValueKeys.value = searchValueKeys.value.trim();
     //输入歌词关键词
     // console.log("歌词关键词");
@@ -160,20 +159,21 @@ const onSearchSongs = async (event) => {
     // loading....
     page.value = 0;
     isLoading.value = true;
-    if (searchListSongs.value.length > 0) {
-        musicList.value.scrollToTop();
-    }
-    // console.log(searchListSongs.value);
     //获取歌单里面的歌
-
     if(searchListSongs.value.length>0 && searchListSongs.value.length<=1000){
         const res = await getSearchListByKeys(searchValueKeys.value,searchListSongs.value);
+        if(res.length<1){
+            showToast({ message: "没有找到相关歌曲~" });
+            Style.value = 3;//可以继续搜索歌曲
+        }
+        isLoading.value = false;
         //添加了歌词的数据数组
         searchListSongsByKeys.value = res;
     }
     else if(searchListSongs.value.length<1){
         showToast({ message: "歌单为空~" });
-        return;
+        isLoading.value = false;
+        Style.value = 3;//可以继续搜索歌曲
     }
     else if (searchListSongs.value.length > 1000) {
         const a= searchListSongs.value.length/1000;
@@ -184,14 +184,18 @@ const onSearchSongs = async (event) => {
             //添加了歌词的数据数组
             searchListSongsByKeys.value = [...searchListSongsByKeys.value, ...res];
         }
+        if (searchListSongsByKeys.value.length < 1) {
+            showToast({ message: "没有找到相关歌曲~" });
+            Style.value = 3;//可以继续搜索歌曲
+        }
+        isLoading.value = false;
+        Style.value = 4;
     }
     // const res = await getSearchListByKeys(searchValueKeys.value,searchListSongs.value);
     // searchListSongsByKeys.value = res;
-
     // searchListSongs.value = result;
     // console.log("搜索结果")
     // console.log(res);
-    hideLoad();
 };
 // const songsIdList = ref();//歌单歌曲id表
 //
@@ -241,7 +245,7 @@ const setStatues=()=>{
             />
         </div>
         <div v-if="Style===1" class="content">
-            <div  class="user-click" v-for="(item, index) in searchListUsers" :key="index" @click="searchSongsLists(item.userId)">
+            <div  class="user-click" v-for="(item, index) in searchListUsers" :key="index" @click="searchSongsLists(item)">
                 <div class="user-info">
                     <h2>{{ item.nickname }}</h2>
                     <p>UserId : {{ item.userId }}</p>
