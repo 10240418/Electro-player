@@ -19,7 +19,7 @@ export const getPlayListById = async (id,count) => {
     } else {
       // 限制歌单详情最大 500
       const ids = trackIds
-        .slice((count-1)*1000, count*1000)
+        .slice((count-1)*800, count*800)
         .map((v) => v.id)
         .toString();
       const resSongs = await getSongDetail(ids);
@@ -58,7 +58,7 @@ export const getMusicUrl = (id) => {
 
 // 获取歌曲的歌词
 export const getLyric = (id) => {
-  return request.get("/lyric", {
+  return request.get("/lyric/new", {
     params: {
       id,
     },
@@ -105,15 +105,25 @@ export const getSearchListByKeys = async (keywords, list) => {
 
     // 检查歌词中是否包含关键词
     if (lyrics.lrc.lyric.includes(keywords)) {
+      console.log(lyrics);
       // 添加符合条件的歌曲到数组中
-      console.log(item.id);
       songs.push({
         ...item,
         lyrics: true // 只保存布尔值表示是否包含关键词
       });
     }
+    else if(lyrics.tlyric!==undefined){
+        if(lyrics.tlyric.lyric.includes(keywords)){
+            console.log(lyrics);
+            // 添加符合条件的歌曲到数组中
+            songs.push({
+            ...item,
+            lyrics: true // 只保存布尔值表示是否包含关键词
+            });
+        }
+    }
     if(i===list.length-1){
-      // console.log(songs);
+      console.log(songs);
       return songs;
     }
   }

@@ -137,7 +137,7 @@ const  searchSongsById=async (id,count)=>{
     isLoading.value = true;
     showToast({ message: "加载歌曲中~" });
     //加载中, 不允许操作
-    const times = Math.ceil(count/1000);
+    const times = Math.ceil(count/800);
     for (let i = 1; i <= times; i++) {
         const result = await getPlayListById(id,i);
         searchListSongs.value = [...searchListSongs.value, ...result.tracks];
