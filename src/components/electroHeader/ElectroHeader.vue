@@ -80,7 +80,7 @@ const getUserInfo = async (uid) => {
 
 <template>
 <!--    登录和头上-->
-    <header>
+    <header class="electro-header">
 
 <!--        <h1 class="header">-->
 <!--            <a href="https://github.com/jianchuxin/Electro-player" target="_blank">Electro 在线音乐播放器</a>-->
