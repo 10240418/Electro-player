@@ -24,7 +24,8 @@ const initializeList = async () => {
     const res = await getPlayListById(id);
     document.title = `${res.name} - Electro 在线音乐播放器`;
     list.value = res.tracks;
-    hideLoad();
+      console.log(list.value);
+      hideLoad();
   } catch (err) {
     console.log(err);
     hideLoad();

@@ -1,42 +1,4 @@
 
-<template>
-    <div class="flex-row-let">
-        <div class="music-list flex-col">
-            <template v-if="list.length > 0">
-                <div class="list-item list-header">
-                    <span class="list-name">歌曲</span>
-                    <span class="list-artist">歌手</span>
-                    <span v-if="isDuration" class="list-time">时长</span>
-                    <span v-else class="list-album">专辑</span>
-                </div>
-                <div ref="listContent" class="list-content" @scroll="listScroll">
-                    <div v-for="(item, index) in list" :key="item.id" class="list-item"
-                         @click.stop="selectItem(item, index)"
-                         :class="{ on: isPlaying && currentMusic.id === item.id }" @dblclick="selectItem(item, index)">
-                        <div class="list-num" v-text="index + 1"></div>
-                        <div class="list-name">
-                            <span class="list-name-text">{{ item.name }}</span>
-                        </div>
-                        <div class="list-artist">{{ item.singer }}</div>
-                        <div v-if="isDuration" class="list-time">
-                            <span class="list-time-format">{{ getFormatTime(item.duration % 3600) }}</span>
-                        </div>
-                        <span v-else class="list-album">{{ item.album }}</span>
-                    </div>
-                    <div>
-
-                    </div>
-                    <slot name="listBtn"></slot>
-                </div>
-            </template>
-        </div>
-
-        <div v-if="showLyrics" class="lyrics-section" @scroll="listScroll" @click="toggleLyricsDisplay">
-            <h2>歌词</h2>
-            <pre>{{ lyrics.lrc.lyric }}</pre>
-        </div>
-    </div>
-</template>
 <script setup>
 import ElectroNoResult from "base/electroNoResult/ElectroNoResult.vue";
 import { ref, computed, watch } from "vue";

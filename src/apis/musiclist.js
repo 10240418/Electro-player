@@ -25,6 +25,7 @@ export const getPlayListById = async (id,count) => {
       const resSongs = await getSongDetail(ids);
       playList.tracks = formatSongs(resSongs.songs);
     }
+    // console.log(playList);
     return playList;
   } catch (error) {
     throw error(error);

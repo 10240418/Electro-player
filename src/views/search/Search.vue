@@ -134,8 +134,8 @@ const  searchSongsById=async (id,count)=>{
 
     const result = await getPlayListById(id);
     searchListSongs.value = result.tracks;
-    // console.log("歌单歌曲");
-    // console.log(searchListSongs.value);
+    console.log("歌单歌曲");
+
 
     // songsIdListLyric.value = await formatSongsToIdgetSongsByLyric(searchListSongs.value,searchValueKeys.value);
     // console.log("歌曲id歌词表");
@@ -163,7 +163,7 @@ const onSearchSongs = async (event) => {
     if (searchListSongs.value.length > 0) {
         musicList.value.scrollToTop();
     }
-    // console.log(searchListSongs.value);
+    console.log(searchListSongs.value);
     //获取歌单里面的歌
 
     if(searchListSongs.value.length>0 && searchListSongs.value.length<=1000){
